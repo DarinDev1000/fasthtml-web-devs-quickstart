@@ -2,7 +2,14 @@ import json
 from fasthtml.common import *
 
 app, rt = fast_app(
-    debug=True, hdrs=(Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),)
+    live=True, # Hot reload
+    debug=True,
+    pico=False,
+    hdrs=(
+        Link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css", type="text/css"),
+        Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css", type="text/css"),
+        Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
+    ),
 )
 
 data = json.dumps(
@@ -18,9 +25,11 @@ data = json.dumps(
 )
 
 
-@rt("/")
-def get():
-    return Titled("FastHTML", P("Let's do this!"))
+@app.get("/")
+def home():
+    return Titled("FastHTML",
+        P("Let's do this!"),
+    )
 
 
 @rt("/hello")
