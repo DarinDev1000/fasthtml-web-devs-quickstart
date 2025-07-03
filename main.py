@@ -1,7 +1,7 @@
 import json
 from fasthtml.common import *
 
-app, rt = fast_app(hdrs=(Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),))
+app, rt = fast_app(debug=True,hdrs=(Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),))
 
 data = json.dumps({
     "data": [{"x": [1, 2, 3, 4],"type": "scatter"},
@@ -11,8 +11,15 @@ data = json.dumps({
     "type": "scatter"
 })
 
-
 @rt("/")
+def get():
+  return Titled("FastHTML", P("Let's do this!"))
+
+@rt("/hello")
+def get():
+  return Titled("Hello, world!")
+
+@rt("/chart")
 def get():
   return Titled("Chart Demo", Div(id="myDiv"),
     Script(f"var data = {data}; Plotly.newPlot('myDiv', data);"))
