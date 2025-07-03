@@ -134,17 +134,40 @@ class Profile:
     age: int
 
 
-@rt("/form")
-def get():
-    profile_form = Form(method="post", action="/profile")(
-        Fieldset(
-            Label("Email", Input(name="email")),
-            Label("Phone", Input(name="phone")),
-            Label("Age", Input(name="age")),
-        ),
-        Button("Save", type="submit"),
+profile_form = Form(method="post", action="/profile")(
+    Fieldset(
+        Label("Email", Input(name="email")),
+        Label("Phone", Input(name="phone")),
+        Label("Age", Input(name="age")),
+    ),
+    Button("Save", type="submit"),
+)
+db = database("profiles.db")
+profiles = db.create(Profile, pk="email")
+profile = Profile(email="john@example.com", phone="123456789", age=25)
+profiles.insert(profile, replace=True)
+
+
+@app.get("/profile/{email}")
+def profile(email: str):
+    profile = profiles[email]
+    filled_profile_form = fill_form(profile_form, profile)
+    return Titled(f"Profile for {profile.email}", filled_profile_form)
+
+
+# print(client.get(f"/profile/john@example.com").text)
+
+
+@app.post("/profile")
+async def save_profile(req: Request):
+    request = await req.form()
+    profile = Profile(
+        email=request["email"],
+        phone=request["phone"],
+        age=int(request["age"]),
     )
-    return profile_form
+    profiles.insert(profile, replace=True)
+    return Redirect(f"/profile/{profile.email}")
 
 
 serve()
