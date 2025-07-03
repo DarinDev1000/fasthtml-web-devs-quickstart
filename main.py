@@ -170,4 +170,11 @@ async def save_profile(req: Request):
     return Redirect(f"/profile/{profile.email}")
 
 
+@rt('/adder/{num}')
+def get(session, num: int):
+    session.setdefault('sum', 0)
+    session['sum'] = session.get('sum') + num
+    return Response(f'The sum is {session["sum"]}.')
+
+
 serve()
