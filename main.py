@@ -24,4 +24,8 @@ def get():
   return Titled("Chart Demo", Div(id="myDiv"),
     Script(f"var data = {data}; Plotly.newPlot('myDiv', data);"))
 
+@rt("/{name}/{age}")
+def get(name: str, age: int):
+  return Titled(f"Hello {name.title()}, age {age}")
+
 serve()
