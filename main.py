@@ -1,5 +1,6 @@
 import json
 from fasthtml.common import *
+from dataclasses import dataclass
 
 hdrs = (
     MarkdownJS(),
@@ -124,6 +125,26 @@ def post():
 @rt("/{fname:path}.{ext:static}")
 async def get(fname: str, ext: str):
     return FileResponse(f"public/{fname}.{ext}")
+
+
+@dataclass
+class Profile:
+    email: str
+    phone: str
+    age: int
+
+
+@rt("/form")
+def get():
+    profile_form = Form(method="post", action="/profile")(
+        Fieldset(
+            Label("Email", Input(name="email")),
+            Label("Phone", Input(name="phone")),
+            Label("Age", Input(name="age")),
+        ),
+        Button("Save", type="submit"),
+    )
+    return profile_form
 
 
 serve()
