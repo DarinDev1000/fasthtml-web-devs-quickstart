@@ -75,11 +75,25 @@ def get(req):
     )
 
 
+def layout(*args, **kwargs):
+    """Dashboard layout for all our dashboard views"""
+    return Main(
+        H1("Dashboard"),
+        Div(*args, **kwargs),
+        cls="dashboard",
+    )
+
+
 @app.get("/")
 def home():
     return Titled(
         "FastHTML",
         P("Let's do this!"),
+        # usage example
+        layout(
+            Ul(*[Li(o) for o in range(3)]),
+            P("Some content", cls="description"),
+        ),
     )
 
 
@@ -97,7 +111,7 @@ def get():
     )
 
 
-@rt("/{name}/{age}")
+@rt("/person/{name}/{age}")
 def get(name: str, age: int):
     return Titled(f"Hello {name.title()}, age {age}")
 
