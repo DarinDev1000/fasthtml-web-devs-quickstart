@@ -1,6 +1,9 @@
-def main():
-    print("Hello from fasthtml-web-devs-quickstart!")
+from fasthtml.common import *
 
+app, rt = fast_app()
 
-if __name__ == "__main__":
-    main()
+@rt("/")
+def get():
+    return Titled("FastHTML", P("Let's do this!"))
+
+serve()
