@@ -1,15 +1,28 @@
 import json
 from fasthtml.common import *
 
+hdrs = (
+    MarkdownJS(),
+    HighlightJS(langs=["python", "javascript", "html", "css"]),
+    Link(
+        rel="stylesheet",
+        href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css",
+        type="text/css",
+    ),
+    Link(
+        rel="stylesheet",
+        href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css",
+        type="text/css",
+    ),
+    Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
+)
+
 app, rt = fast_app(
-    live=True, # Hot reload
+    live=True,  # Hot reload
     debug=True,
     pico=False,
-    hdrs=(
-        Link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css", type="text/css"),
-        Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css", type="text/css"),
-        Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),
-    ),
+    hdrs=hdrs,
+    static_path="public",
 )
 
 data = json.dumps(
@@ -24,10 +37,48 @@ data = json.dumps(
     }
 )
 
+content = """
+Here are some _markdown_ elements.
+
+- This is a list item
+- This is another list item
+- And this is a third list item
+
+**Fenced code blocks work here.**
+"""
+
+
+@rt("/markdown")
+def get(req):
+    return Titled("Markdown rendering example", Div(content, cls="marked"))
+
+
+code_example = """
+import datetime
+import time
+
+for i in range(10):
+    print(f"{datetime.datetime.now()}")
+    time.sleep(1)
+"""
+
+
+@rt("/code")
+def get(req):
+    return Titled(
+        "Markdown rendering example",
+        Div(
+            # The code example needs to be surrounded by
+            # Pre & Code elements
+            Pre(Code(code_example))
+        ),
+    )
+
 
 @app.get("/")
 def home():
-    return Titled("FastHTML",
+    return Titled(
+        "FastHTML",
         P("Let's do this!"),
     )
 
@@ -54,6 +105,11 @@ def get(name: str, age: int):
 @rt("/")
 def post():
     return Titled("HTTP POST", P("Handle POST"))
+
+
+@rt("/{fname:path}.{ext:static}")
+async def get(fname: str, ext: str):
+    return FileResponse(f"public/{fname}.{ext}")
 
 
 serve()
