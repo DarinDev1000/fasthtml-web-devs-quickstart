@@ -1,31 +1,50 @@
 import json
 from fasthtml.common import *
 
-app, rt = fast_app(debug=True,hdrs=(Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),))
+app, rt = fast_app(
+    debug=True, hdrs=(Script(src="https://cdn.plot.ly/plotly-2.32.0.min.js"),)
+)
 
-data = json.dumps({
-    "data": [{"x": [1, 2, 3, 4],"type": "scatter"},
-            {"x": [1, 2, 3, 4],"y": [16, 5, 11, 9],"type": "scatter"}],
-    "title": "Plotly chart in FastHTML ",
-    "description": "This is a demo dashboard",
-    "type": "scatter"
-})
+data = json.dumps(
+    {
+        "data": [
+            {"x": [1, 2, 3, 4], "type": "scatter"},
+            {"x": [1, 2, 3, 4], "y": [16, 5, 11, 9], "type": "scatter"},
+        ],
+        "title": "Plotly chart in FastHTML ",
+        "description": "This is a demo dashboard",
+        "type": "scatter",
+    }
+)
+
 
 @rt("/")
 def get():
-  return Titled("FastHTML", P("Let's do this!"))
+    return Titled("FastHTML", P("Let's do this!"))
+
 
 @rt("/hello")
 def get():
-  return Titled("Hello, world!")
+    return Titled("Hello, world!")
+
 
 @rt("/chart")
 def get():
-  return Titled("Chart Demo", Div(id="myDiv"),
-    Script(f"var data = {data}; Plotly.newPlot('myDiv', data);"))
+    return Titled(
+        "Chart Demo",
+        Div(id="myDiv"),
+        Script(f"var data = {data}; Plotly.newPlot('myDiv', data);"),
+    )
+
 
 @rt("/{name}/{age}")
 def get(name: str, age: int):
-  return Titled(f"Hello {name.title()}, age {age}")
+    return Titled(f"Hello {name.title()}, age {age}")
+
+
+@rt("/")
+def post():
+    return Titled("HTTP POST", P("Handle POST"))
+
 
 serve()
